@@ -1,0 +1,43 @@
+#include<bits/stdc++.h>
+#define ariful ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define lb lower_bound
+#define ub upper_bound
+#define pb push_back
+#define ll long long
+#define all(x) x.begin(),x.end()
+#define vi vector<long long>
+#define asort(ar,n) sort(ar,ar+n)
+#define vrsort(vc) sort(vc.rbegin(),vc.rend())
+#define YES cout<<"YES\n"
+#define NO cout<<"NO\n"
+#define Yes cout<<"Yes\n"
+#define No cout<<"No\n"
+#define p(ans) cout<<(ans)<<"\n"
+#define yes cout<<"yes\n"
+#define no cout<<"no\n"
+#define nl "\n"
+#define shesh return 0;
+using namespace std;
+const ll mx = 1e6 + 1;
+ll d[mx + 1];
+int main()
+{
+    ariful
+    ll t=1,m,n,c=0,x,y,z,a,q,k;
+    
+    for (ll i = 1; i <= mx;i++)
+    {
+        for (ll j = i; j <=mx; j+=i)
+        {
+            d[j]++;
+        }
+    }
+    cin >> t;
+    while (t--)
+    {
+        cin >> x >> y;
+        ll g = __gcd(x, y);
+        cout << d[g]<<nl;
+    }
+
+}

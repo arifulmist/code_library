@@ -1,0 +1,1742 @@
+/*
+Code of Zarif
+
+Context
+
+1. Template
+2. Power
+3. nCr
+4. Sieve
+5. Prime Factorization and Divisors
+6. BFS
+7. DFS
+8. Dijkstra
+9. Bellman Ford
+10. Trie
+11. Merge Sort
+12. Permutation by Raisa
+13. Knapsack
+14. LCS
+15. MCM
+16. Binary Search
+17. Segment Tree
+18. Topsort
+19. MST Kruskal
+20. DSU
+21. KMP
+22. Sum of Divisors (SOD)
+23. Next Greater Element
+24. Rerooting
+25. Mos Algorithm
+26. Sqrt Decomposition
+27. Euler Tour
+28. Floyd Warshall
+29. Strongly Connected Components (SCC)
+30. Graph Coloring
+31. PBDS / Ordered Set 
+32. Bitmask DP
+33. SOS DP
+34. Longest Increasing Subsequence ( LIS )
+
+
+
+1. Template:
+
+#include<bits/stdc++.h>
+#define endl "\n"
+#define in long long
+#define dub double
+#define dubb long double
+#define pb push_back
+using namespace std;
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c,s,f,t,x;
+    cin>>t;
+    while(t--){
+        c=0,f=0,s=0;
+        cin>>n;
+        in a[n];
+        for(i=0;i<n;i++){
+            cin>>a[i];
+        }
+        
+    }
+    return 0;
+}
+
+2. Power: in x=(in)(pow(5, 2)+1e-18);
+
+3. nCr:
+
+typedef long long LL;
+const LL MOD = 1e9+7;
+const LL MAX = 2e5+5;
+ 
+vector<LL> fact(MAX), inv(MAX);
+void factorial(){
+    fact[0] = 1;
+    for(LL i=1; i<MAX; i++) 
+        fact[i] = (i*fact[i-1])%MOD;
+}
+LL bigmod(LL a, LL n, LL M=MOD){
+    LL res = 1;
+    while(n){
+        if(n&1) res = (res*a)%M;
+        a = (a*a)%M, n /= 2;
+    }
+    return res;
+}
+void inverse(){
+    for(int i=0; i<MAX; ++i)
+        inv[i] = bigmod(fact[i], MOD-2);
+}
+LL C(LL a, LL b){
+	if(a<b or a<0 or b<0) return 0;
+    LL de = (inv[b]*inv[a-b])%MOD;
+    return (fact[a]*de)%MOD;
+}
+//call factorial() and inverse() from main function
+// end nCR
+
+LL ModInv(int a, int M){    //M is prime
+    return bigmod(a, M-2, M); 
+}
+
+
+4. Sieve:
+
+in prime[20000005];
+void sieve(in n)
+{
+    for (in i=2;i<=n;i++){
+        prime[i]=1;
+    }
+    for(in i=4;i<=n;i+=2){
+        prime[i]=0;
+    }
+    for(in i=3;i*i<=n;i++){
+        if(prime[i]){
+            for(in j=i*i;j<=n;j+=i*2){
+                prime[j]=0;
+            }
+        }
+    }
+}
+
+5. Prime Factorization and Divisors:
+
+in prime[20000005];
+void sieve(in n)
+{
+    for (in i=2;i<=n;i++){
+        prime[i]=i;
+    }
+    for(in i=4;i<=n;i+=2){
+        prime[i]=2;
+    }
+    for(in i=3;i*i<=n;i++){
+        if(prime[i]==i){
+            for(in j=i*i;j<=n;j+=i*2){
+                prime[j]=i;
+            }
+        }
+    }
+}
+
+set<in>pf;
+set<in>dv;
+void primefactor(in x)
+{
+    dv.insert(x);
+    in y=x;
+    while (x!=1)
+    {
+        pf.insert(prime[x]);
+        dv.insert(prime[x]);
+        x=x/prime[x];
+        dv.insert(y/x);
+        dv.insert(x);
+    }
+}
+
+6. BFS:
+
+map<in,vector<in>>m;
+map<in,in>vis,par,lvl,dis;
+vector<in>seq;
+void bfs(in st)
+{
+    queue<in>q;
+    vis[st]=1;
+    dis[st]=0;
+    par[st]=-1;
+    lvl[dis[st]]++;
+    q.push(st);
+    while(!q.empty()){
+        in cur=q.front();
+        seq.push_back(cur);
+        q.pop();
+        for(auto it=m[cur].begin();it!=m[cur].end();it++)
+        {
+            if(!vis[*it]){
+                vis[*it]=1;
+                dis[*it]=dis[cur]+1;
+                par[*it]=cur;
+                lvl[dis[*it]]++;
+                q.push(*it);
+            }
+        }
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c=0,s=0,f=0,t,x,e,y;
+    cin>>t;
+    while(t--){
+        cin>>n>>e;
+        for (i=0;i<e;i++){
+            cin>>x>>y;
+            m[x].push_back(y);
+            m[y].push_back(x);
+        }
+        for(auto it=m.begin();it!=m.end();it++){
+            if(!vis[it->first]){
+                bfs(it->first);
+            }
+        }
+        
+        m.clear();
+        dis.clear();
+        vis.clear();
+        par.clear();
+        lvl.clear();
+        seq.clear();
+    }
+    return 0;
+}
+
+6.DFS:
+
+in dfs(in st)
+{
+    vis[st]=1;
+    for (in i=0;i<m[st].size();i++){
+        in cur=m[st][i];
+        if(!vis[cur]){
+            par[cur]=st;
+            dis[cur]=dis[par[cur]]+1;
+            dfs(cur);
+        }
+    }
+}
+
+7. DFS Cycle and Euler Tour:
+
+map<in,vector<in>>m;
+map<in,in>vis,dis,discover,finish;
+map<in,in>par;
+in hascycle=0,pos=0;
+vector<in>eulertour;
+void dfs(in st,in parent=-1)
+{
+    vis[st]=1;
+    eulertour.pb(st);
+    discover[pos]=st;
+    pos++;
+    for (in i=0;i<m[st].size();i++){
+        in cur=m[st][i];
+        if(!vis[cur]){
+            dfs(cur,st);
+            par[cur]=st;
+            dis[cur]=dis[par[cur]]+1;
+        }
+        else if(vis[st] && cur!=parent) hascycle=1;;
+    }
+    eulertour.pb(st);
+    finish[pos]=st;
+    pos++;
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,s,f,t,x,y,e,w,c;
+    s=0,f=0,c=0;
+    cin>>n>>e;
+    for(i=0;i<e;i++){
+        cin>>x>>y;
+        m[x].pb(y);
+        m[y].pb(x);
+    }
+    for(auto it=m.begin();it!=m.end();it++){
+        if(!vis[it->first]){
+            dfs(it->first);
+        }
+    }
+    if(hascycle) cout<<"Cyclic\n";
+    else cout<<"Not Cyclic\n";
+    for (i=0;i<pos;i++){
+        cout<<eulertour[i]<<" ";
+    }
+    return 0;
+}
+
+8. Dijkstra:
+
+map<in,vector<pair<in,in>>>m;
+map<in,in>dist;
+void dijkstra(in src,in n)
+{
+    priority_queue<pair<in,in>,vector<pair<in,in>>,greater<pair<in,in>>>pq;
+    pq.push({0,src});
+    dist[src]=0;
+    vector<in>dis(n,inf);
+    dis[src]=0;
+    while(!pq.empty()){
+        in u=pq.top().second;
+        pq.pop();
+        for (in i=0;i<m[u].size();i++){
+            in wt=m[u][i].second;
+            in v=m[u][i].first;
+            if(dis[v]>dis[u]+wt){
+                dis[v]=dis[u]+wt;
+                pq.push({dis[v],v});
+                dist[v]=dis[u]+wt;
+            }
+        }
+    }
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c,s,f,t,x,y,e,w;
+    cin>>t;
+    while (t--)
+    {
+        s=0,c=0,f=0;
+        cin>>n>>e;
+        for (i=0;i<e;i++){
+            cin>>x>>y>>w;
+            m[x].pb({y,w});
+            m[y].pb({x,w});
+        }
+        dijkstra(0,n);
+        for (i=0;i<n;i++){
+            cout<<i<<" "<<dist[i]<<"\n";
+        }
+        m.clear();
+        dist.clear();
+    }
+    return 0;
+}
+
+9.Bellman Ford:
+
+void BellmanFord(int graph[][3], int V, int E,
+				int src)
+{
+	int dis[V];
+	for (int i = 0; i < V; i++)
+		dis[i] = INT_MAX;
+	dis[src] = 0;
+	for (int i = 0; i < V - 1; i++) {
+
+		for (int j = 0; j < E; j++) {
+			if (dis[graph[j][0]] != INT_MAX && dis[graph[j][0]] + graph[j][2] <
+							dis[graph[j][1]])
+				dis[graph[j][1]] =
+				dis[graph[j][0]] + graph[j][2];
+		}
+	}
+	for (int i = 0; i < E; i++) {
+		int x = graph[i][0];
+		int y = graph[i][1];
+		int weight = graph[i][2];
+		if (dis[x] != INT_MAX &&
+				dis[x] + weight < dis[y])
+			cout << "Graph contains negative"
+					" weight cycle"
+				<< endl;
+	}
+
+	cout << "Vertex Distance from Source" << endl;
+	for (int i = 0; i < V; i++)
+		cout << i << "\t\t" << dis[i] << endl;
+}
+int main()
+{
+	int V = 5; 
+	int E = 8; 
+	int graph[][3] = { { 0, 1, -1 }, { 0, 2, 4 },
+					{ 1, 2, 3 }, { 1, 3, 2 },
+					{ 1, 4, 2 }, { 3, 2, 5 },
+					{ 3, 1, 1 }, { 4, 3, -3 } };
+
+	BellmanFord(graph, V, E, 0);
+	return 0;
+}
+
+10. Trie:
+
+string a;
+struct node
+{
+    in cnt;
+    node *child[26];
+    char ch;
+    node *par;
+    node()
+    {
+        cnt=0;
+        par=NULL;
+        for(in i=0;i<26;i++){
+            child[i]=NULL;
+        }
+    }
+};
+node *root=new node();
+void ins()
+{
+    in sz=a.size();
+    node*temp=root;
+    for (in i=0;i<sz;i++){
+        char ch=a[i];
+        if(temp->child[ch-'a']==NULL){
+            temp->child[ch-'a']=new node();
+            temp->child[ch-'a']->par=temp;
+        }
+        temp=temp->child[ch-'a'];
+        temp->ch=a[i];
+    }
+    temp->cnt++;
+}
+in srch()
+{
+    in sz=a.size();
+    node*temp=root;
+    if(root==NULL) return 0;
+    for(in i=0;i<sz;i++){
+        char ch=a[i];
+        if(temp->child[ch-'a']==NULL) return 0;
+        temp=temp->child[ch-'a'];
+    }
+    return temp->cnt;
+}
+string st="";
+void print(node *cur){
+    for(in i=0;i<cur->cnt;i++){
+        cout<<st<<"\n";
+    }
+    for (in i=0;i<26;i++){
+        char ch='a'+i;
+        if(cur->child[i]!=NULL){
+            st+=ch;
+            print(cur->child[i]);
+            st.pop_back();
+        }
+    }
+}
+void dlt(string &st)
+{
+    in sz=st.size();
+    node *temp=root;
+    if(root==NULL) return;
+    for (in i=0;i<sz;i++){
+        char ch=st[i];
+        if(temp->child[ch-'a']==NULL) return;
+        temp=temp->child[ch-'a'];
+    }
+    in f=0;
+    for (in i=0;i<26;i++){
+        if(temp->child[i]!=NULL) f=1;
+    }
+    if(f && temp->cnt){
+        temp->cnt--;
+    }
+    else if(temp->cnt){
+        temp->cnt--;
+        while(temp!=NULL && temp->cnt==0){
+            node *cur=temp;
+            temp=temp->par;
+//            delete cur;
+            f=0;
+            for (in i=0;i<26;i++){
+                if(temp->child[i]!=NULL) return;
+            }
+        }
+    }
+}
+
+11. Merge Sort:
+
+#include<bits/stdc++.h>
+#define endl "\n"
+#define in long long
+#define dub double
+#define dubb long double
+#define pb push_back
+using namespace std;
+in a[1000],n=0;
+void mrg(in p,in q,in r);
+void srt(in p,in r)
+{
+    if(p<r){
+        in q=(p+r)/2;
+        srt(p,q);
+        srt(q+1,r);
+        mrg(p,q,r);
+    }
+}
+void mrg(in p,in q,in r)
+{
+    in n1=q-p+1,n2=r-q;
+    in a1[n1+1],a2[n2+1];
+    a1[n1]=a2[n2]=INT_MAX;
+    in i,j,k;
+    for (i=0;i<n1;i++){
+        a1[i]=a[p+i];
+    }
+    for (i=0;i<n2;i++){
+        a2[i]=a[q+1+i];
+    }
+    i=0,j=0;
+    for(k=p;k<=r;k++){
+        if(a1[i]<=a2[j]){
+            a[k]=a1[i];
+            i++;
+        }
+        else{
+            a[k]=a2[j];
+            j++;
+        }
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c=0,s=0,f=0,t,x;
+    cin>>n;
+    for (i=0;i<n;i++){
+        cin>>a[i];
+    }
+    srt(0,n-1);
+    for (i=0;i<n;i++){
+        cout<<a[i]<<" ";
+    }
+    return 0;
+}
+
+12. Permutation by Raisa:
+
+string a="";
+in n,k,c=0;
+bool placed[10000];
+void fn()
+{
+    if(c==k) return;
+    if(a.size()==n){
+        cout<<a<<"\n";
+        c++;
+//        a.pop_back();
+        return;
+
+    }
+    for(char ch='A';ch<'A'+n;ch++){
+        if(!placed[ch-'A']){
+            a+=ch;
+            placed[ch-'A']=true;
+            fn();
+            a.pop_back();
+            placed[ch-'A']=false;
+        }
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,s=0,f,t,x;
+    cin>>t;
+    while (t--)
+    {
+        a="";
+        c=0,f=0;
+        s++;
+        cin>>n>>k;
+        cout<<"Case "<<s<<":\n";
+        fn();
+    }
+    return 0;
+}
+
+13. Knapsack:
+
+in tk[3000],w[3000],dp[3000][3000];
+void knapsack(in n,in mxw)
+{
+    in i,j;
+    for(i=1;i<=mxw;i++){
+        for(j=1;j<=n;j++){
+            if(i-w[j]<0) dp[i][j]=dp[i][j-1];
+            else{
+                dp[i][j]=max(dp[i][j-1],dp[i-w[j]][j-1]+tk[j]);
+            }
+        }
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c,s=0,f,t,x,mxw;
+    cin>>mxw>>n;
+    for(i=0;i<n;i++){
+        cin>>w[i+1]>>tk[i+1];
+    }
+    knapsack(n,mxw);
+    cout<<dp[mxw][n];
+    return 0;
+}
+
+14. LCS:
+
+string a,b,ans="";
+in dp[3001][3001],len=0;
+void lcs(in n,in m)
+{
+    in i,j;
+    for(i=1;i<=n;i++){
+        for(j=1;j<=m;j++){
+            if(a[i-1]==b[j-1]){
+                dp[i][j]=dp[i-1][j-1]+1;
+            }
+            else dp[i][j]=max(dp[i][j-1],dp[i-1][j]);
+        }
+    }
+    len=dp[n][m];
+    i=n,j=m;
+    while(i>0 && j>0){
+        if(dp[i][j]!=max(dp[i-1][j],dp[i][j-1])){
+            ans+=a[i-1];
+            i--;
+            j--;
+        }
+        else if(dp[i-1][j]>=dp[i][j-1]) i--;
+        else j--;
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c,s,f,t,x,m;
+    cin>>a>>b;
+    lcs(a.size(),b.size());
+    for(i=0;i<ans.size();i++){
+        cout<<ans[ans.size()-i-1];
+    }
+    return 0;
+}
+
+15. MCM:
+
+in a[1000],dp[1000][1000],n;
+in mcm()
+{
+    in i,j,k,l;
+    for(l=2;l<n;l++){
+        for (i=1;i<n;i++){
+            j=i+l-1;
+            dp[i][j]=inf;
+            for(k=i;k<j;k++){
+                dp[i][j]=min(dp[i][j],dp[i][k]+dp[k+1][j]+a[i-1]*a[k]*a[j]);
+            }
+        }
+    }
+    return dp[1][n-1];
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c=0,s=0,f=0,t,x,y;
+    cin>>n;
+    for (i=0;i<n;i++){
+        cin>>x>>y;
+        a[i]=x;
+    }
+    a[n]=y;
+    n++;
+    cout<<mcm()<<"\n";
+    return 0;
+}
+
+16. Binary Search:
+
+int main()
+{
+    int i,j=0,k,n,c,s,f,t,q,la,ha,ma,lb,hb,mb,ans1,ans2,l,h,m;
+    cin>>t;
+    while (t--)
+    {
+        j++;
+        s=0,c=0,f=0;
+        cin>>n>>q;
+        int a[n],b[n];
+        for (i=0;i<n;i++){
+            scanf("%d%d",&a[i],&b[i]);
+        }
+        sort(a,a+n);
+        sort(b,b+n);
+        cout<<"Case "<<j<<":\n";
+        while(q--){
+            cin>>k;
+            int ans1=0,ans2=0;
+            l=0,h=n-1,f=0;
+            while(l<=h){
+                if (k>b[n-1] || k<a[0])
+                    {
+                        f=1;
+                        break;
+                    }
+                m=(l+h)/2;
+                if(b[m]>=k){
+                    ans1=m;
+                    h=m-1;
+                }
+                else
+                    l=m+1;
+            }
+//            ans1++;
+            l=0,h=n-1;
+            while(l<=h){
+                if (k>b[n-1] || k<a[0]) {f=1;break;}
+                m=(l+h)/2;
+                if(a[m]<=k){
+                    ans2=m;
+                    l=m+1;
+                }
+                else
+                    h=m-1;
+            }
+            ans2=n-ans2;
+            int ans=n-ans1-ans2+1;
+            if (f==0)
+                cout<<ans<<"\n";
+            else
+                cout<<"0\n";
+        }
+    }
+    return 0;
+}
+
+17. Segment Tree:
+
+in a[100001],tree[4*100001],lazy[4*100001];
+void build(in ind,in l,in r)
+{
+    if(l==r){
+        tree[ind]=a[l];
+        return;
+    }
+    in mid=(l+r)/2;
+    build(2*ind+1,l,mid);
+    build(2*ind+2,mid+1,r);
+    tree[ind]=tree[2*ind+1]+tree[2*ind+2];
+}
+in getsum(in ind,in l,in r,in ql,in qr)
+{
+    if(lazy[ind]){
+        tree[ind]+=(r-l+1)*lazy[ind];
+        if(l!=r){
+            lazy[2*ind+1]+=lazy[ind];
+            lazy[2*ind+2]+=lazy[ind];
+        }
+        lazy[ind]=0;
+    }
+    if(l>=ql && r<=qr) return tree[ind];
+    if(ql>r || qr<l) return 0;
+    in mid=(l+r)/2;
+    in left=getsum(2*ind+1,l,mid,ql,qr);
+    in right=getsum(2*ind+2,mid+1,r,ql,qr);
+    return left+right;
+}
+void update(in ind,in l,in r,in i,in x)
+{
+    if(i<l || i>r) return;
+    if(l>=i && i<=r){
+        tree[ind]=x;
+        return;
+    }
+    in mid=(l+r)/2;
+    update(2*ind+1,l,mid,i,x);
+    update(2*ind+2,mid+1,r,i,x);
+    tree[ind]=tree[2*ind+1]+tree[2*ind+2];
+}
+void rupdate(in ind,in l,in r,in ql,in qr,in x)
+{
+    if(lazy[ind]){
+        tree[ind]+=(r-l+1)*lazy[ind];
+        if(l!=r){
+            lazy[2*ind+1]=lazy[ind];
+            lazy[2*ind+2]=lazy[ind];
+        }
+        lazy[ind]=0;
+    }
+    if(qr<l || ql>r || l>r) return;
+    if(l>=ql && r<=qr){
+        tree[ind]+=(r-l+1)*x;
+        if(l!=r){
+            lazy[2*ind+1]=x;
+            lazy[2*ind+2]=x;
+        }
+        return;
+    }
+    in mid=(l+r)/2;
+    rupdate(2*ind+1,l,mid,ql,qr,x);
+    rupdate(2*ind+2,mid+1,r,ql,qr,x);
+    tree[ind]=tree[2*ind+1]+tree[2*ind+2];
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c=0,s=0,f=0,t,x,y,q,ql,qr;
+    cin>>n;
+    for (i=0;i<n;i++){
+        cin>>a[i];
+    }
+    build(0,0,n-1);
+    for (i=0;i<n*3;i++){
+        cout<<tree[i]<<" ";
+    }
+    cout<<"\n";
+    update(0,0,n-1,2,6);
+    for (i=0;i<n*3;i++){
+        cout<<tree[i]<<" ";
+    }
+    cout<<"\n";
+    cin>>q;
+    while(q--){
+        cin>>ql>>qr;
+        cout<<getsum(0,0,n-1,ql-1,qr-1)<<"\n";
+
+    }
+    return 0;
+}
+
+18. Topsort:
+
+map<in,vector<in>>adj;
+//vector<in>adj[100001];
+map<in,in>cnt;
+map<in,set<in>>indegree;
+vector<in>ans;
+in n;
+void topsort()
+{
+    in x;
+    while(ans.size()<n){
+        if(indegree[0].size()>0){
+            in u=*(indegree[0].begin());
+            auto it=indegree[0].begin();
+            ans.pb(u);
+            for(in i=0;i<adj[u].size();i++){
+                in v=adj[u][i];
+                if(cnt[v]==0) continue;
+                x=cnt[v];
+                cnt[v]--;
+                indegree[x].erase(indegree[x].find(v));
+                x--;
+                indegree[x].insert(v);
+            }
+            indegree[0].erase(it);
+        }
+        if(indegree[0].empty()) break;
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c=0,s=0,f=0,t,x,e,u,v;
+    while(cin>>n>>e){
+        if(n==0) break;
+        for (i=1;i<=n;i++){
+            cnt[i]=0;
+        }
+        while(e--){
+            cin>>u>>v;
+            adj[u].pb(v);
+            cnt[v]++;
+        }
+        for(auto it=cnt.begin();it!=cnt.end();it++){
+            indegree[it->second].insert(it->first);
+        }
+        topsort();
+        for (i=0;i<ans.size();i++){
+            cout<<ans[i]<<" ";
+        }
+        cnt.clear();
+        indegree.clear();
+        adj.clear();
+        ans.clear();
+        cout<<"\n";
+    }
+    return 0;
+}
+
+19. MST Kruskal:
+
+in par[1000001],rnk[1000001];
+pair<in,pair<in,in>>edge[1000001];
+in n,e;
+in findset(in x)
+{
+    if(x==par[x]) return x;
+    else{
+        return par[x]=findset(par[x]);
+    }
+}
+void mrg(in u,in v)
+{
+    in ru=findset(u),rv=findset(v);
+    if(ru==rv) return;
+    else{
+        if(rnk[ru]>=rnk[rv]){
+            par[rv]=ru;
+            rnk[ru]+=rnk[rv];
+        }
+        else{
+            par[ru]=rv;
+            rnk[rv]+=rnk[ru];
+        }
+    }
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c=0,s=0,f=0,t,u,v,w;
+    cin>>n>>e;
+    for (i=0;i<e;i++){
+        cin>>u>>v>>w;
+        edge[i]={w,{u,v}};
+    }
+    for (i=0;i<n;i++){
+        par[i+1]=i+1;
+        rnk[i+1]=1;
+    }
+    sort(edge,edge+e);
+    for (i=0;i<e;i++){
+        if(findset(edge[i].second.first)==findset(edge[i].second.second)) continue;
+        s+=edge[i].first;
+        mrg(findset(edge[i].second.first),findset(edge[i].second.second));
+    }
+    cout<<s;
+    return 0;
+}
+
+20. DSU:
+
+class DisjSet {
+public:
+    in *rank, *parent, n;
+
+public:
+    DisjSet(in n)
+    {
+        rank = new in[n];
+        parent = new in[n];
+        this->n = n;
+        makeSet();
+    }
+    void makeSet()
+    {
+        for (in i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+    }
+    in find(in x)
+    {
+            if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
+
+        return parent[x];
+    }
+    void Union(in x, in y)
+    {
+        in xset = find(x);
+        in yset = find(y);
+        if (xset == yset)
+            return;
+        if (rank[xset] < rank[yset]) {
+            parent[xset] = yset;
+        }
+        else if (rank[xset] > rank[yset]) {
+            parent[yset] = xset;
+        }
+        else {
+            parent[yset] = xset;
+            rank[xset] = rank[xset] + 1;
+        }
+    }
+};
+
+
+21. KMP:
+#include <bits/stdc++.h>
+#define endl "\n"
+#define in long long
+#define dub double
+#define dubb long double
+#define pb push_back
+using namespace std;
+vector<in>txt,pat;
+in lps[1000001],cnt=0;
+vector<in>pos;
+void computeLPSArray(in M);
+
+void KMPSearch()
+{
+    in M = pat.size();
+    in N = txt.size();
+    computeLPSArray(M);
+    in i = 0;
+    in j = 0;
+    while ((N - i) >= (M - j)) {
+        if (pat[j] == txt[i]) {
+            j++;
+            i++;
+        }
+        if (j == M) {
+//            printf("Found pattern at index %d ", i - j);
+//            pos.pb(i-j+1);
+            cnt++;
+            j = lps[j - 1];
+        }
+        else if (i < N && pat[j] != txt[i]) {
+            if (j != 0)
+                j = lps[j - 1];
+            else
+                i = i + 1;
+        }
+    }
+}
+void computeLPSArray(in M)
+{
+    in len = 0;
+    lps[0] = 0;
+    in i = 1;
+    while (i < M) {
+        if (pat[i] == pat[len]) {
+            len++;
+            lps[i] = len;
+            i++;
+        }
+        else
+        {
+            if (len != 0) {
+                len = lps[len - 1];
+            }
+            else
+            {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c=0,s=0,f=0,t,x;
+//    cin>>t;
+//    while(t--){
+        c=s=f=0;
+        cin>>n>>k;
+        in a[n],b[k];
+        for (i=0;i<n;i++){
+            cin>>a[i];
+            if(i>0){
+                txt.pb(a[i]-a[i-1]);
+            }
+        }
+        for (i=0;i<k;i++){
+            cin>>b[i];
+            if(i>0){
+                pat.pb(b[i]-b[i-1]);
+            }
+        }
+        if(n<k) cout<<"0\n";
+        else{
+            if(pat.empty()){
+                cout<<n<<"\n";
+            }
+            else{
+                KMPSearch();
+                cout<<cnt<<"\n";
+            }
+        }
+//        pos.clear();
+//    }
+    return 0;
+}
+
+22. Sum of Divisors (SOD):
+
+#include<bits/stdc++.h>
+#define endl "\n"
+#define in long long
+#define dub double
+#define dubb long double
+#define pb push_back
+using namespace std;
+in prime[20000005],ans[20000005];
+void sieve(in n)
+{
+    for (in i=2;i<=n;i++){
+        prime[i]=i;
+    }
+    for(in i=4;i<=n;i+=2){
+        prime[i]=2;
+    }
+    for(in i=3;i*i<=n;i++){
+        if(prime[i]==i){
+            for(in j=i*i;j<=n;j+=i*2){
+                prime[j]=i;
+            }
+        }
+    }
+}
+in mod=1e18;
+in power(in a, in b){
+    if(b==0) return 1;
+    in x=power(a,b/2);
+    if(b%2==0) x=x*x;
+    else x=x*x*a;
+    return x;
+}
+in sum_of_div(in n)
+{
+    in k=n,sum=1;
+    while(k>1){
+        in p=prime[k],e=0;
+        while(k%p==0){
+            k/=p;
+            e++;
+        }
+//        in x=(in)(pow(p,e+1)+1e-18);
+        in x=power(p,e+1);
+        sum*=(x-1)/(p-1);
+    }
+    return sum;
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c=0,s=0,f=0,t,x;
+    sieve(20000000);
+    for (i=2;i<=20000000;i++){
+        c+=sum_of_div(i);
+//        cout<<c<<"\n";
+        ans[i]=c;
+    }
+//    cout<<ans[1000]<<" ";
+////    cout<<"Hello\n";
+    while(cin>>n){
+        c=f=s=0;
+        if(!n) break;
+        cout<<ans[n]<<"\n";
+    }
+    return 0;
+}
+
+23. Next Greater Element:
+
+in output[1000005];
+void nextGreaterElement(in x[],in n)
+{
+    stack<in>s;
+    s.push(0);
+    for (in i=0;i<n;i++){
+        while(!s.empty() && x[s.top()]<=x[i]){
+            output[s.top()]=i;
+            s.pop();
+        }
+        s.push(i);
+    }
+    while(!s.empty())
+    {
+        output[s.top()]=-1;
+        s.pop();
+    }
+}
+
+24. Rerooting:
+
+#include<bits/stdc++.h>
+#define endl "\n"
+#define in long long
+#define dub double
+#define dubb long double
+#define pb push_back
+using namespace std;
+map<in,vector<in>>m;
+in dp[1000001],dp1[1000001],sub[1000001],n;
+void dfs(in x,in parent)
+{
+    dp[x]=0;
+    sub[x]=1;
+    for(in i=0;i<m[x].size();i++){
+        if(m[x][i]!=parent){
+            dfs(m[x][i],x);
+            sub[x]+=sub[m[x][i]];
+            dp[x]+=dp[m[x][i]]+sub[m[x][i]];
+        }
+    }
+}
+void dfs1(in x,in parent,in carry)
+{
+    dp1[x]=dp[x]+carry;
+    sub[x]=1;
+    for(in i=0;i<m[x].size();i++){
+        if(m[x][i]!=parent){
+            in parent_dp=dp1[x];
+            parent_dp=dp[m[x][i]]+sub[m[x][i]];
+            in parent_sub=(n-sub[m[x][i]]);
+            in new_carry=parent_dp+parent_sub;
+            dfs1(m[x][i],x,new_carry);
+        }
+    }
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c,s,f,t,x,y,e;
+    cin>>t;
+    while (t--)
+    {
+        s=0,c=0,f=0;
+        cin>>n;
+        for (i=0;i<n-1;i++){
+            cin>>x>>y;
+            m[x].pb(y);
+            m[y].pb(x);
+        }
+        dfs(1,-1);
+        dfs1(1,-1,0);
+        for (i=0;i<n;i++){
+            cout<<i+1<<" "<<dp[i+1]<<"\n";
+        }
+        m.clear();
+    }
+    return 0;
+}
+
+
+25. Mos Algorithm:
+
+#include <bits/stdc++.h>
+#include<bits/stdc++.h>
+#define endl "\n"
+#define in long long
+#define dub double
+#define dubb long double
+#define pb push_back
+using namespace std;
+in block;
+struct Query
+{
+in L, R,ind;
+};
+map<in,in>ans;
+in a[1000001],n;
+Query query[1000001];
+bool compare(Query x, Query y)
+{
+if (x.L/block != y.L/block)
+return x.L/block < y.L/block;
+return x.R < y.R;
+}
+void queryResults(in m)
+{
+block = (in)sqrt(n);
+sort(query,query+m,compare);
+in currL = 0, currR = 0;
+in currSum = 0;
+for (in i=0; i<m; i++)
+{
+in L = query[i].L, R = query[i].R;
+while (currL < L)
+{
+currSum -= a[currL];
+currL++;
+}
+while (currL > L)
+{
+currSum += a[currL-1];
+currL--;
+}
+while (currR <= R)
+{
+currSum += a[currR];
+currR++;
+}
+while (currR > R+1)
+{
+currSum -= a[currR-1];
+currR--;
+}
+ans[query[i].ind]=currSum;
+}
+}
+int main()
+{
+    in q,ql,qr,i,j,k,s=0,c=0,f=0,x,t;
+cin>>n;
+for (i=0;i<n;i++){
+   cin>>a[i];
+}
+cin>>q;
+for (i=0;i<q;i++){
+   cin>>ql>>qr;
+   query[i]={ql,qr,i};
+}
+queryResults(q);
+for (i=0;i<q;i++){
+   cout<<ans[i]<<"\n";
+}
+return 0;
+}
+
+26. Sqrt Decomposition:
+
+#include<bits/stdc++.h>
+#define endl "\n"
+#define in long long
+#define dub double
+#define dubb long double
+#define pb push_back
+
+using namespace std;
+
+in a[1000001];
+in block[1001];
+in blk_sz,n;
+void update(in idx, in val)
+{
+in blockNumber = idx / blk_sz;
+block[blockNumber] += val - a[idx];
+a[idx] = val;
+}
+in query(in l, in r)
+{
+in sum = 0;
+while (l < r and l % blk_sz != 0 and l != 0) {
+// traversing first block in range
+sum += a[l];
+l++;
+}
+while (l + blk_sz - 1 <= r) {
+// traversing completely overlapped blocks in range
+sum += block[l / blk_sz];
+l += blk_sz;
+}
+while (l <= r) {
+sum += a[l];
+l++;
+}
+return sum;
+}
+void preprocess()
+{
+in blk_idx = -1;
+blk_sz = sqrt(n);
+for (in i  = 0; i < n; i++) {
+if (i % blk_sz == 0) {
+blk_idx++;
+}
+block[blk_idx] += a[i];
+}
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c=0,s=0,f=0,t,x,q,ql,qr;
+    cin>>n;
+    for (i=0;i<n;i++){
+        cin>>a[i];
+    }
+preprocess();
+    cin>>q;
+    while(q--){
+        cin>>ql>>qr;
+        s=query(ql,qr);
+        cout<<s<<"\n";
+    }
+    return 0;
+}
+
+27. Euler Tour :
+
+map<in,vector<in>>m;
+map<in,in>vis,dis,discover,finish;
+map<in,in>par;
+in hascycle=0,pos=0;
+vector<in>eulertour;
+void dfs(in st,in parent=-1)
+{
+    vis[st]=1;
+    eulertour.pb(st);
+    discover[pos]=st;
+    pos++;
+    for (in i=0;i<m[st].size();i++){
+        in cur=m[st][i];
+        if(!vis[cur]){
+            dfs(cur,st);
+            par[cur]=st;
+            dis[cur]=dis[par[cur]]+1;
+        }
+        else if(vis[st] && cur!=parent) hascycle=1;;
+    }
+    eulertour.pb(st);
+    finish[pos]=st;
+    pos++;
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,s,f,t,x,y,e,w,c;
+    s=0,f=0,c=0;
+    cin>>n>>e;
+    for(i=0;i<e;i++){
+        cin>>x>>y;
+        m[x].pb(y);
+        m[y].pb(x);
+    }
+    for(auto it=m.begin();it!=m.end();it++){
+        if(!vis[it->first]){
+            dfs(it->first);
+        }
+    }
+    if(hascycle) cout<<"Cyclic\n";
+    else cout<<"Not Cyclic\n";
+    for (i=0;i<pos;i++){
+        cout<<eulertour[i]<<" ";
+    }
+    return 0;
+}
+
+28. Floyd Warshall :
+
+#include <bits/stdc++.h>
+using namespace std;
+#define V 4
+#define INF 99999
+void printSolution(int dist[][V]);
+
+void floydWarshall(int dist[][V])
+{
+
+	int i, j, k;
+	for (k = 0; k < V; k++) {
+		for (i = 0; i < V; i++) {
+			for (j = 0; j < V; j++) {
+				if (dist[i][j] > (dist[i][k] + dist[k][j])
+					&& (dist[k][j] != INF
+						&& dist[i][k] != INF))
+					dist[i][j] = dist[i][k] + dist[k][j];
+			}
+		}
+	}
+
+	printSolution(dist);
+}
+
+void printSolution(int dist[][V])
+{
+	cout << "The following matrix shows the shortest "
+			"distances"
+			" between every pair of vertices \n";
+	for (int i = 0; i < V; i++) {
+		for (int j = 0; j < V; j++) {
+			if (dist[i][j] == INF)
+				cout << "INF"
+					<< " ";
+			else
+				cout << dist[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+
+int main()
+{
+	int graph[V][V] = { { 0, 5, INF, 10 },
+						{ INF, 0, 3, INF },
+						{ INF, INF, 0, 1 },
+						{ INF, INF, INF, 0 } };
+
+	floydWarshall(graph);
+	return 0;
+}
+
+29. Strongly Connected Components (SCC) :
+
+const in N = 100002;
+vector<in> adj[N], rev[N];
+bitset<N> vis;
+in n, m;
+in comp[N]; // stores nth node is includedto which scc_no
+void DFS1(in node, stack<in> &TS){
+    vis[node] = true;
+    for (in child : adj[node])
+        if (!vis[child])
+            DFS1(child, TS);
+    TS.push(node);
+}
+void DFS2(in node, const in cc_no, vector<in> &vec){
+    vis[node] = true;
+    comp[node] = cc_no;
+    vec.push_back(node);
+
+    for (in child : rev[node])
+        if (!vis[child])
+            DFS2(child, cc_no,
+                 vec);
+}
+auto SCC(){
+    vis.reset();
+    stack<in> TS;
+    for (in i = 1; i <= n; ++i)
+        if (!vis[i])
+            DFS1(i, TS);
+    // finding the SCCs using TopSort
+    vis.reset();
+    in cc_no = 1;
+    vector<vector<in>> components;
+    while (!TS.empty())
+    {
+        int idx = TS.top();
+        TS.pop();
+        if (!vis[idx])
+        {
+            vector<in> vec;
+            DFS2(idx, cc_no++, vec);
+            components.push_back(vec);
+        }
+    }
+    return components;
+}
+
+int main(){
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c=0,s=0,f=0,t,x;
+    cin >> n >> m;
+    for (in i = 0; i < m; ++i){
+        in u, v;
+        cin >> u >> v;
+        // --u, --v;
+        adj[u].push_back(v);
+        rev[v].push_back(u);
+    }
+    auto res = SCC();
+    in sz = res.size(), scc_no = 1;
+    cout << "No. of SCC: " << sz << '\n';
+    for (auto x : res)
+    {
+        cout << "SCC no." << scc_no++ << " includes nodes : ";
+        for (auto y : x) cout<<y<<' ';
+        cout << '\n';
+    }
+    return 0;
+}
+
+
+30. Graph Coloring :
+
+map<in,vector<in>>m;
+in n,e,color[1000001],c=0;
+bool issafe(in node)
+{
+    for (in i=0;i<m[node].size();i++){
+        if(color[m[node][i]]==color[node]) return false;
+    }
+    return true;
+}
+void backtrack(in node)
+{
+    if(node==n) return;
+    in clr;
+    for(clr=1; ;clr++){
+//        cout<<"Node "<<node<<": "<<clr<<"\n";
+        color[node]=clr;
+        if(issafe(node)) break;
+    }
+    c=max(c,clr);
+    backtrack(node+1);
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,s=0,f=0,t,x,y;
+    cin>>n>>e;
+    while(e--){
+        cin>>x>>y;
+        m[x].pb(y);
+        m[y].pb(x);
+    }
+    color[0]=1;
+    backtrack(1);
+    cout<<c<<"\n";
+    for (i=0;i<n;i++){
+        cout<<i<<" "<<color[i]<<"\n";
+    }
+    return 0;
+}
+
+31. PBDS / Ordered Set :
+
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c,s,f,t,x;
+    s=0,c=0,f=0;
+    ordered_set st;
+    //accessing index i: st.find_by_order(i)
+    //no. of elements less than x: st.order_of_key(x)
+    cin>>n;
+    for (i=0;i<n;i++){
+        cin>>x;
+        st.insert(x);
+    }
+    
+    return 0;
+}
+
+
+32. Bitmask DP :
+
+const in mx=20;
+in cost[mx][mx],n;
+in dp[mx][1<<mx];
+in bmdp(in cur,in mask)
+{
+    if(cur==n) return 0;
+    if(dp[cur][mask]!=-1) return dp[cur][mask];
+    in mn=1e18;
+    for (in i=0;i<n;i++){
+        if(mask&(1<<i)){
+            mn=min(mn,cost[i][cur]+bmdp(cur+1,mask^(1<<i)));
+        }
+    }
+    return dp[cur][mask]=mn;
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+
+    in i,j,k,c=0,s=0,f=0,t=1,x;
+//    cin>>t;
+    while(t--){
+        memset(dp,-1,sizeof dp);
+        cin>>n;
+        for (i=0;i<n;i++){
+            for (j=0;j<n;j++){
+                cin>>cost[i][j];
+            }
+        }
+        x=bmdp(0,(1<<n)-1);
+        cout<<x<<"\n";
+    }
+    return 0;
+}
+
+33. SOS DP :
+
+
+const in mx=2e6+1;
+in freq[mx],dp[mx],dp1[mx],dp2[mx];
+in compliment(in x)
+{
+    in temp=(1<<20);
+    temp--;
+    return (x^temp);
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,n,c=0,s=0,f=0,t;
+    cin>>n;
+    in a[n];
+    for(i=0;i<n;i++){
+        cin>>a[i];
+        dp[a[i]]++;
+        dp1[a[i]]++;
+        dp2[a[i]]++;
+    }
+    for (j=0;j<20;j++){
+        for (i=1;i<(1<<20);i++){
+            if(i&(1<<j)){
+                in temp=i;
+                temp^=(1<<j);
+//                dp[i]+=dp[temp];
+                dp[i]+=dp[temp];
+
+            }
+            else{
+                in temp=i;
+                temp|=(1<<j);
+                dp1[i]+=dp1[temp];
+            }
+        }
+    }
+    for (i=0;i<n;i++){
+        cout<<dp[a[i]]<<" "<<dp1[a[i]]<<" "<<n-dp[compliment(a[i])]<<"\n";
+    }
+    return 0;
+}
+
+
+34. Longest Increasing Subsequence ( LIS )
+
+
+in a[100000],n;
+map<in,in>m,vis;
+in fn(in p)
+{
+    if(p==-1) return 1;
+    if(vis[p]) return m[p];
+    in mx=1;
+    for (in i=0;i<p;i++){
+        if(a[p-i-1]<a[p]) mx=max(mx,fn(p-i-1)+1);
+    }
+    vis[p]=1;
+    return m[p]=mx;
+}
+int main()
+{
+    ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+    in i,j,k,c=0,s=0,f=0,t,mx=1;
+    cin>>n;
+    for(i=0;i<n;i++){
+        cin>>a[i];
+    }
+    for (i=0;i<n;i++){
+        mx=max(mx,fn(i));
+    }
+    cout<<mx<<"\n";
+    return 0;
+}
+
+
+
+
+*/
